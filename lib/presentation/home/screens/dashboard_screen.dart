@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_development_boot_camp/models/transaction_model.dart';
+import 'package:app_development_boot_camp/presentation/home/theme/app_gradients.dart';
+import 'package:app_development_boot_camp/presentation/home/widgets/gradient_button.dart';
 import 'add_transaction_screen.dart';
 import 'transaction_list_screen.dart';
 
@@ -63,115 +65,210 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double progress = income == 0 ? 0 : expense / income;
+    final double rawProgress = income == 0 ? 0 : expense / income;
+    final double progress = rawProgress.clamp(0.0, 1.0);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mexpense", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.blue,
+        title: const Text(
+          "Mexpense",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+            decoration: const BoxDecoration(gradient: AppGradients.brand)),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            height: 220,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    //mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text("Balance: $balance",
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 24)),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text("Income: $income",
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 18)),
-                      SizedBox(
-                        height: 6,
-                      ),
-                      Text("Expense: $expense",
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 18)),
-                    ],
-                  ),
+      extendBodyBehindAppBar: false,
+      body: Container(
+        decoration: BoxDecoration(gradient: AppGradients.background()),
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(18),
+                height: 220,
+                decoration: BoxDecoration(
+                  gradient: AppGradients.brand,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppGradients.brandEnd.withValues(alpha: 0.28),
+                      blurRadius: 18,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
-                Stack(
-                  alignment: Alignment.center,
+                child: Row(
                   children: [
-                    SizedBox(
-                      height: 90,
-                      width: 90,
-                      child: CircularProgressIndicator(
-                        value: progress,
-                        backgroundColor: Colors.blue.shade100,
-                        valueColor: const AlwaysStoppedAnimation(Colors.red),
-                        strokeWidth: 7,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          const Text(
+                            "Balance",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            balance.toStringAsFixed(2),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const Spacer(),
+                          _MetricRow(
+                            label: "Income",
+                            value: income,
+                            dotColor: AppGradients.income,
+                          ),
+                          const SizedBox(height: 10),
+                          _MetricRow(
+                            label: "Expense",
+                            value: expense,
+                            dotColor: AppGradients.expense,
+                          ),
+                          const SizedBox(height: 6),
+                        ],
                       ),
                     ),
-                    Text("${(progress * 100).toStringAsFixed(0)}%",
-                        style: const TextStyle(color: Colors.white)),
+                    const SizedBox(width: 16),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          height: 92,
+                          width: 92,
+                          child: CircularProgressIndicator(
+                            value: progress,
+                            backgroundColor:
+                                Colors.white.withValues(alpha: 0.22),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                                Colors.white),
+                            strokeWidth: 8,
+                            strokeCap: StrokeCap.round,
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "${(progress * 100).toStringAsFixed(0)}%",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            const Text(
+                              "spent",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
-                )
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 40,
-          ),
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const AddTransactionScreen(),
-                  ),
-                );
+                ),
+              ),
+              const SizedBox(height: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: GradientButton(
+                  gradient: AppGradients.brand,
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddTransactionScreen(),
+                      ),
+                    );
 
-                if (result != null) {
-                  addTransaction(result);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text(
-                "Add Transaction",
-                style: TextStyle(
-                  fontSize: 18,
+                    if (result != null) {
+                      addTransaction(result);
+                    }
+                  },
+                  child: const Text(
+                    "Add Transaction",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: TransactionListScreen(
+                  transactions: transactions,
+                  onDelete: deleteTransaction,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: TransactionListScreen(
-              transactions: transactions,
-              onDelete: deleteTransaction,
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
 }
+
+class _MetricRow extends StatelessWidget {
+  const _MetricRow({
+    required this.label,
+    required this.value,
+    required this.dotColor,
+  });
+
+  final String label;
+  final double value;
+  final Color dotColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          height: 10,
+          width: 10,
+          decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Text(
+          value.toStringAsFixed(2),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Intentionally left private widgets only for this screen.

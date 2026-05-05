@@ -1,5 +1,6 @@
 import 'package:app_development_boot_camp/presentation/home/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:app_development_boot_camp/presentation/home/theme/app_gradients.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,36 +45,39 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnim,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppGradients.brand),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnim,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet,
+                    size: 56,
+                    color: Colors.white,
+                  ),
                 ),
-                child: Icon(
-                  Icons.account_balance_wallet,
-                  size: 56,
-                  color: Colors.white,
+                const SizedBox(height: 24),
+                const Text(
+                  'MEXPENCE',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'MEXPENCE',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
